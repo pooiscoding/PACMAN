@@ -1,0 +1,79 @@
+class MoveableObj {
+
+    
+    // private
+    static Array dx;
+    static Array dy;
+    
+    // private
+    field int x; // x-position (pixel) (calc from the left of the map)
+    field int y; // y-position (pixel) (calc from the btm of the map)
+    field int speed; // the speed of the obj (pixel/step)
+    field int direction; // the direction of the obj (0-right, 1-btm, 2-left, 3-top)
+
+    // public
+    // set the dx and dy info, call by main function in the begining
+    function void init(){
+        let dx = Array.new(4);
+        let dx[0] = 1;
+        let dx[1] = 0;
+        let dx[2] = -1;
+        let dx[3] = 0;
+        let dy = Array.new(4);
+        let dy[0] = 0;
+        let dy[1] = -1;
+        let dy[2] = 0;
+        let dy[3] = 1;
+        return;
+    }
+    // deAlloc dx and dy array, call by main function in the end
+    function void release(){
+        do dx.dispose();
+        do dy.dispose();
+        return;
+    }
+
+    // interface-1 move() -> move the obj to next position
+    method void move(){
+        let x = x + (speed * dx[direction]);
+        let y = y + (speed * dy[direction]);
+        return;
+    }
+    // interface-2/3 get_x()/get_y() -> return the obj's x/y-position
+    method int get_x(){
+        return x;
+    } 
+    method int get_y(){
+        return y;
+    }
+    
+    // protected
+    // constructor
+    constructor MoveableObj new(int startX, int startY, int startSpeed, int startDir){
+        let x = startX;
+        let y = startY;
+        let speed = startSpeed;
+        let direction = startDir;
+        return this;
+    }
+    // deconstructor
+    method void dispose(){
+        do Memory.deAlloc(this);
+        return;
+    }
+    // interface-4 set_speed(int newSpeed) -> set the obj's speed
+    method void set_speed(int newSpeed){
+        let speed = newSpeed;
+        return;
+    }
+    // interface-5  set_dir(int newDir) -> set the obj's direction, if newDir = -1 => maintain
+    method void set_dir(int newDir){
+        if (newDir = -1){
+            return;
+        }
+        let direction = newDir;
+        return;
+    }
+    
+
+}

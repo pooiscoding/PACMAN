@@ -1,0 +1,73 @@
+class Game {
+    // private
+    static int leftSide;
+    static int btmSide;
+    static int xBoundary;
+    static int yBoundary;
+
+    // ??
+    field int test;
+
+    // public
+    // constructor
+    constructor Game new(){
+        let test = 0; // ??
+        return this;
+    }
+    // deconstructor
+    method void dispose(){
+        do Memory.deAlloc(this);
+        return;
+    }
+    
+    method void run(){
+        
+        var Ghost g1;
+        var int t;
+        // temp
+        do Screen.setColor(true); // black
+        do Screen.drawRectangle(Game.translate_x_to_col(-1), Game.translate_y_to_row(yBoundary+1), Game.translate_x_to_col(xBoundary+1), Game.translate_y_to_row(-1));
+        do Screen.setColor(false); // white
+        do Screen.drawRectangle(Game.translate_x_to_col(0), Game.translate_y_to_row(yBoundary), Game.translate_x_to_col(xBoundary), Game.translate_y_to_row(0));
+        
+        let g1 = Ghost.new(0, 0, 0);
+        
+        while (true){
+            do g1.update_direction();
+            do g1.erase();
+            do g1.move();
+            do g1.draw();
+            let t = t - 1;
+            do Sys.wait(10);
+        }
+
+        do g1.dispose();
+        return;
+    }    
+    function void init(){
+        let leftSide = 112;
+        let btmSide = 16;
+        let xBoundary = 287;
+        let yBoundary = 223;
+        return;
+    }
+    function int translate_x_to_col(int x){
+        return (x + leftSide);
+    }
+    function int translate_y_to_row(int y){
+        return (255 - (y + btmSide));
+    }
+    function boolean ooxb(int x){
+        if ((x < 0) | (x > xBoundary)){
+            return true;
+        }
+        return false;
+    }
+    function boolean ooyb(int y){
+        if ((y < 0) | (y > yBoundary)){
+            return true;
+        }
+        return false;
+    }
+
+}

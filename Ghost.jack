@@ -1,0 +1,81 @@
+class Ghost {
+    
+    // private
+    field MoveableObj prototype; // simulate "inheritance" behavior
+    field int state; // 0-transparent 1-weak 2-normal
+
+    // public
+    // constructor
+    constructor Ghost new(int startX, int startY, int direction){
+        let prototype = MoveableObj.new(startX, startY, 1, direction);
+        return this;
+    }
+
+    // deconstructor
+    method void dispose(){
+        do prototype.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    // interface-1 is_transparent() -> return whether the ghost is transparent or not
+    method boolean is_transparent(){
+        if (state = 0){
+            return true;
+        }
+        return false;
+    }
+
+    // interface-2 update_direction() -> set the direction of the ghost
+    method void update_direction(){ 
+        var int newDir;
+        let newDir = -1;
+        if (is_transparent()){
+            // transparent: towards the direction on the path going back to ghosts' home
+            if (Game.ooxb(get_x()+16+1)){
+                let newDir = 2;
+            }
+            if (Game.ooxb(get_x()-1)){
+                let newDir = 0;
+            }
+            
+        }else{
+            // weak/normal: towards the direction calc by alg of ghost's ai
+            if (Game.ooxb(get_x()+16+1)){
+                let newDir = 2;
+            }
+            if (Game.ooxb(get_x()-1)){
+                let newDir = 0;
+            }
+        }
+        do prototype.set_dir(newDir);
+        return;
+    }
+
+    // interface-3 draw() -> draw the ghost on the screen 
+    method void draw(){
+        do Screen.setColor(true); // black
+        do Screen.drawCircle(Game.translate_x_to_col(get_x()+8), Game.translate_y_to_row(get_y()+8), 8);
+        return;
+    }
+
+    // interface-4 erase() -> erase the ghost on the screen
+    method void erase(){
+        do Screen.setColor(false); // white
+        do Screen.drawCircle(Game.translate_x_to_col(get_x()+8), Game.translate_y_to_row(get_y()+8), 8);
+        return;
+    }
+
+    // to simulate "inheritance" behavior, put all the public methods here
+    method void move(){
+        do prototype.move();
+        return;
+    }
+    method int get_x(){
+        return prototype.get_x();
+    } 
+    method int get_y(){
+        return prototype.get_y();
+    }
+
+}

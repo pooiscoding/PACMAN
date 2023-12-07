@@ -1,0 +1,13 @@
+class Main {
+    // entry point
+    function void main(){
+        var Game game;
+        do MoveableObj.init();
+        do Game.init();
+        let game = Game.new();
+        do game.run();
+        do game.dispose();
+        do MoveableObj.release();
+        return;
+    }
+}
