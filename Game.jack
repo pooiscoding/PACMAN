@@ -38,7 +38,7 @@ class Game {
             do g1.move();
             do g1.draw();
             let t = t - 1;
-            do Sys.wait(10);
+            do Sys.wait(100);
         }
 
         do g1.dispose();
@@ -69,5 +69,7 @@ class Game {
         }
         return false;
     }
-
+    function int translate_pixel_to_chunk(int x){
+        return (x / 8);
+    }
 }

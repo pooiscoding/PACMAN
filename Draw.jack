@@ -1,0 +1,47 @@
+class Draw {
+    function void render(int screenX, int screenY, Array ptrs, int size){
+        var int i;
+        var int j;
+        var Array temp;
+        let i = 0;
+        while (i < size){
+            let temp = ptrs[i];
+            let j = 0;
+            while (j < size){
+                if (temp[j]){
+                    do Screen.setColor(true);
+                    do Screen.drawPixel(screenX + j, screenY + 1 - size + i);
+                }else{
+                    do Screen.setColor(false);
+                    do Screen.drawPixel(screenX + j, screenY + 1 - size + i);
+                }
+                let j = j + 1;
+            }
+
+            let i = i + 1;
+        }
+        return;
+    }
+    // 16*16
+    function Array image_row_generator(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10, int p11, int p12, int p13, int p14, int p15, int p16){
+        var Array arr;
+        let arr = Array.new(16);
+        let arr[0] = p1;
+        let arr[1] = p2;
+        let arr[2] = p3;
+        let arr[3] = p4;
+        let arr[4] = p5;
+        let arr[5] = p6;
+        let arr[6] = p7;
+        let arr[7] = p8;
+        let arr[8] = p9;
+        let arr[9] = p10;
+        let arr[10] = p11;
+        let arr[11] = p12;
+        let arr[12] = p13;
+        let arr[13] = p14;
+        let arr[14] = p15;
+        let arr[15] = p16;
+        return arr;
+    }
+}

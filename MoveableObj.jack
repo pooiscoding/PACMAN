@@ -46,6 +46,13 @@ class MoveableObj {
     method int get_y(){
         return y;
     }
+    // interface-4/5 get_x_chunk()/get_y_chunk() -> return the obj's x/y-chunk position
+    method int get_x_chunk(){
+        return (x / 8);
+    }
+    method int get_y_chunk(){
+        return (y / 8);
+    }
     
     // protected
     // constructor
@@ -61,18 +68,22 @@ class MoveableObj {
         do Memory.deAlloc(this);
         return;
     }
-    // interface-4 set_speed(int newSpeed) -> set the obj's speed
+    // interface-6 set_speed(int newSpeed) -> set the obj's speed
     method void set_speed(int newSpeed){
         let speed = newSpeed;
         return;
     }
-    // interface-5  set_dir(int newDir) -> set the obj's direction, if newDir = -1 => maintain
+    // interface-7  set_dir(int newDir) -> set the obj's direction, if newDir = -1 => maintain
     method void set_dir(int newDir){
         if (newDir = -1){
             return;
         }
         let direction = newDir;
         return;
+    }
+    // interface-8
+    method int get_speed(){
+        return speed;
     }
     
 
