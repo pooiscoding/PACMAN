@@ -1,14 +1,20 @@
 class Draw {
-    function void render(int screenX, int screenY, Array ptrs, int size){
+    function void render(int screenX, int screenY, Array ptrs, int size, boolean reverse){
         var int i;
         var int j;
+        var int lookJ;
         var Array temp;
         let i = 0;
         while (i < size){
             let temp = ptrs[i];
             let j = 0;
             while (j < size){
-                if (temp[j]){
+                if (reverse){
+                    let lookJ = size - j - 1;
+                }else{
+                    let lookJ = j;
+                }
+                if (temp[lookJ]){
                     do Screen.setColor(true);
                     do Screen.drawPixel(screenX + j, screenY + 1 - size + i);
                 }else{

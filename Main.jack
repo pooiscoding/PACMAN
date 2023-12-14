@@ -4,10 +4,14 @@ class Main {
         var Game game;
         do MoveableObj.init();
         do Game.init();
+        do Output.printString("hello");
+        do Ghost.init();
+      
         let game = Game.new();
         do game.run();
         do game.dispose();
         do MoveableObj.release();
+        do Ghost.release();
         return;
     }
 }

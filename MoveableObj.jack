@@ -86,5 +86,8 @@ class MoveableObj {
         return speed;
     }
     
-
+    // interface-9
+    method int get_direction(){
+        return direction;
+    }
 }

@@ -8,11 +8,25 @@ class Ghost {
     field int image_state;
 
     // public
+    // initializer
+    function void init(){
+        let ghost_image = Array.new(2);
+        let ghost_image[0] = Ghost.generate_ghost_image(0);
+        let ghost_image[1] = Ghost.generate_ghost_image(1);
+        return;
+    }
+    function void release(){
+        do Ghost.release_ghost_image(ghost_image[0]);
+        do Ghost.release_ghost_image(ghost_image[1]);
+        do ghost_image.dispose();
+        return;
+    }
     // constructor
     constructor Ghost new(int startX, int startY, int direction){
         let prototype = MoveableObj.new(startX, startY, 5, direction);
         let state = 2;
         let image_state = 0;
+        
         return this;
     }
 
@@ -48,6 +62,7 @@ class Ghost {
             // weak/normal: towards the direction calc by alg of ghost's ai
             if (Game.ooxb(get_x()+16+prototype.get_speed())){
                 let newDir = 2;
+                
             }
             if (Game.ooxb(get_x()-prototype.get_speed())){
                 let newDir = 0;
@@ -60,14 +75,20 @@ class Ghost {
     // interface-3 draw() -> draw the ghost on the screen 
     method void draw(){
         var Array image;
-        let image = Ghost.ghost_image(image_state);
+        
+        var boolean reverse;
         if (image_state = 0){
             let image_state = 1;
         }else{
             let image_state = 0;
         }
-        do Draw.render(Game.translate_x_to_col(get_x()), Game.translate_y_to_row(get_y()), image, 16);
-        do Ghost.release_ghost_image(image);
+        if (prototype.get_direction() = 2){
+            let reverse = true;
+        }else{
+            let reverse = false;
+        }
+        let image = ghost_image[img_index()];
+        do Draw.render(Game.translate_x_to_col(get_x()), Game.translate_y_to_row(get_y()), image, 16, reverse);
         return;
     }
 
@@ -96,7 +117,7 @@ class Ghost {
         return prototype.get_y_chunk();
     }
 
-    function Array ghost_image(int state){
+    function Array generate_ghost_image(int state){
         
         var Array ptrs;
         var Array temp;
@@ -142,6 +163,9 @@ class Ghost {
         return ptrs;
     }
 
+    method int img_index(){
+        return image_state;
+    }
     function void release_ghost_image(Array ptrs){
         var int i;
         var Array temp;
