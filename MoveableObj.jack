@@ -53,6 +53,18 @@ class MoveableObj {
     method int get_y_chunk(){
         return (y / 8);
     }
+    method int get_x_nxt_chunk(int dir){
+        if (dir = 0){
+            return (get_x_chunk()+dx[dir]+1);
+        }
+        return (get_x_chunk()+dx[dir]);
+    }
+    method int get_y_nxt_chunk(int dir){
+        if (dir = 3){
+            return (get_y_chunk()+dy[dir]+1);
+        }
+        return (get_y_chunk()+dy[dir]);
+    }
     
     // protected
     // constructor

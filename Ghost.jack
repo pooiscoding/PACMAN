@@ -6,7 +6,7 @@ class Ghost {
     field MoveableObj prototype; // simulate "inheritance" behavior
     field int state; // 0-transparent 1-weak 2-normal
     field int image_state;
-
+    field int id;
     // public
     // initializer
     function void init(){
@@ -22,9 +22,10 @@ class Ghost {
         return;
     }
     // constructor
-    constructor Ghost new(int startX, int startY, int direction){
-        let prototype = MoveableObj.new(startX, startY, 5, direction);
+    constructor Ghost new(int Id, int startXChunk, int startYChunk, int direction){
+        let prototype = MoveableObj.new(startXChunk*8, startYChunk*8, 8, direction);
         let state = 2;
+        let id = Id;
         let image_state = 0;
         
         return this;
@@ -46,26 +47,57 @@ class Ghost {
     }
 
     // interface-2 update_direction() -> set the direction of the ghost
-    method void update_direction(){ 
+    method void update_direction(Map map){
+        
         var int newDir;
+        var int originalNextXChunk;
+        var int originalNextYChunk;
+        var Array temp;
+        var int tempSize;
+        var int ind;
         let newDir = -1;
-        if (is_transparent()){
-            // transparent: towards the direction on the path going back to ghosts' home
-            if (Game.ooxb(get_x()+16+prototype.get_speed())){
-                let newDir = 2;
+        
+        if ((~(Game.is_chunk_start(get_x()))) | (~(Game.is_chunk_start(get_y())))){
+            return;
+        }
+        
+        let originalNextXChunk = get_x_nxt_chunk(prototype.get_direction());
+        
+        let originalNextYChunk = get_y_nxt_chunk(prototype.get_direction());
+        
+        if (id = 1){
+            return;
+        }
+        if (id = 2){
+            return;
+        }
+        if (id = 3){
+            return;
+        }
+        if (id = 4){
+            return;
+        }
+        if (id = 5){ // debugging random mode
+            if (false){
+                return;
             }
-            if (Game.ooxb(get_x()-prototype.get_speed())){
-                let newDir = 0;
-            }
-            
-        }else{
-            // weak/normal: towards the direction calc by alg of ghost's ai
-            if (Game.ooxb(get_x()+16+prototype.get_speed())){
-                let newDir = 2;
+            else{
+                // random
                 
-            }
-            if (Game.ooxb(get_x()-prototype.get_speed())){
-                let newDir = 0;
+                if (map.get_chunk_info(originalNextXChunk, originalNextYChunk) = -1){
+                    let temp = Array.new(4);
+                    let tempSize = 0;
+                    let ind = 0;
+                    while (ind < 4){
+                        if (~(map.get_chunk_info(get_x_nxt_chunk(ind), get_y_nxt_chunk(ind)) = -1)){
+                            let temp[tempSize] = ind;
+                            let tempSize = tempSize + 1;
+                        }
+                        let ind = ind + 1;
+                    }
+                    let newDir = Game.random(temp, tempSize);
+                    do temp.dispose();
+                }
             }
         }
         do prototype.set_dir(newDir);
@@ -116,49 +148,52 @@ class Ghost {
     method int get_y_chunk(){
         return prototype.get_y_chunk();
     }
+    method int get_x_nxt_chunk(int dir){
+        return prototype.get_x_nxt_chunk(dir);
+    }
+    method int get_y_nxt_chunk(int dir){
+        return prototype.get_y_nxt_chunk(dir);
+    }
 
     function Array generate_ghost_image(int state){
         
         var Array ptrs;
-        var Array temp;
-        var int ind;
         let ptrs = Array.new(16);
-        let ind = 0;
         if (state = 0){
-            let ptrs[0] =  Draw.image_row_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            let ptrs[1] =  Draw.image_row_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
-            let ptrs[2] =  Draw.image_row_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
-            let ptrs[3] =  Draw.image_row_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
-            let ptrs[4] =  Draw.image_row_generator( 0, 0,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1, 0, 0);
-            let ptrs[5] =  Draw.image_row_generator( 0, 0,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1, 0);
-            let ptrs[6] =  Draw.image_row_generator( 0, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1, 0);
-            let ptrs[7] =  Draw.image_row_generator( 0,-1,-1,-1, 0, 0,-1, 0,-1,-1, 0, 0,-1, 0,-1, 0);
-            let ptrs[8] =  Draw.image_row_generator( 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 0);
-            let ptrs[9] =  Draw.image_row_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
-            let ptrs[10] = Draw.image_row_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
-            let ptrs[11] = Draw.image_row_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
-            let ptrs[12] = Draw.image_row_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
-            let ptrs[13] = Draw.image_row_generator( 0,-1,-1, 0,-1,-1,-1, 0, 0,-1,-1,-1, 0,-1,-1, 0);
-            let ptrs[14] = Draw.image_row_generator( 0,-1, 0, 0, 0,-1,-1, 0, 0,-1,-1, 0, 0, 0,-1, 0);
-            let ptrs[15] = Draw.image_row_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[0] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
+            let ptrs[2] =  Draw.image_row16_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
+            let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[4] =  Draw.image_row16_generator( 0, 0,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1, 0, 0);
+            let ptrs[5] =  Draw.image_row16_generator( 0, 0,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0,-1,-1,-1, 0, 0,-1, 0,-1,-1, 0, 0,-1, 0,-1, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 0);
+            let ptrs[9] =  Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[10] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[11] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[12] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[13] = Draw.image_row16_generator( 0,-1,-1, 0,-1,-1,-1, 0, 0,-1,-1,-1, 0,-1,-1, 0);
+            let ptrs[14] = Draw.image_row16_generator( 0,-1, 0, 0, 0,-1,-1, 0, 0,-1,-1, 0, 0, 0,-1, 0);
+            let ptrs[15] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
         if (state = 1){
-            let ptrs[0] =  Draw.image_row_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            let ptrs[1] =  Draw.image_row_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
-            let ptrs[2] =  Draw.image_row_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
-            let ptrs[3] =  Draw.image_row_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
-            let ptrs[4] =  Draw.image_row_generator( 0, 0,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1, 0, 0);
-            let ptrs[5] =  Draw.image_row_generator( 0, 0,-1,-1, 0, 0,-1, 0,-1,-1, 0, 0,-1, 0,-1, 0);
-            let ptrs[6] =  Draw.image_row_generator( 0, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1, 0);
-            let ptrs[7] =  Draw.image_row_generator( 0,-1,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1, 0);
-            let ptrs[8] =  Draw.image_row_generator( 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 0);
-            let ptrs[9] =  Draw.image_row_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
-            let ptrs[10] = Draw.image_row_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
-            let ptrs[11] = Draw.image_row_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
-            let ptrs[12] = Draw.image_row_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
-            let ptrs[13] = Draw.image_row_generator( 0,-1,-1,-1,-1, 0,-1,-1,-1,-1, 0,-1,-1,-1,-1, 0);
-            let ptrs[14] = Draw.image_row_generator( 0, 0,-1,-1, 0, 0, 0,-1,-1, 0, 0, 0,-1,-1, 0, 0);
-            let ptrs[15] = Draw.image_row_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[0] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
+            let ptrs[2] =  Draw.image_row16_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
+            let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[4] =  Draw.image_row16_generator( 0, 0,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1, 0, 0);
+            let ptrs[5] =  Draw.image_row16_generator( 0, 0,-1,-1, 0, 0,-1, 0,-1,-1, 0, 0,-1, 0,-1, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0,-1,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 0);
+            let ptrs[9] =  Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[10] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[11] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[12] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[13] = Draw.image_row16_generator( 0,-1,-1,-1,-1, 0,-1,-1,-1,-1, 0,-1,-1,-1,-1, 0);
+            let ptrs[14] = Draw.image_row16_generator( 0, 0,-1,-1, 0, 0, 0,-1,-1, 0, 0, 0,-1,-1, 0, 0);
+            let ptrs[15] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
         return ptrs;
     }

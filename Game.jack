@@ -4,7 +4,9 @@ class Game {
     static int btmSide;
     static int xBoundary;
     static int yBoundary;
-
+    static int time;
+    static int randomA;
+    static int randomB;
     // ??
     field int test;
 
@@ -22,22 +24,24 @@ class Game {
     
     method void run(){
         
+        var Map map;
         var Ghost g1;
-        var int t;
         // temp
         do Screen.setColor(true); // black
         do Screen.drawRectangle(Game.translate_x_to_col(-1), Game.translate_y_to_row(yBoundary+1), Game.translate_x_to_col(xBoundary+1), Game.translate_y_to_row(-1));
         do Screen.setColor(false); // white
         do Screen.drawRectangle(Game.translate_x_to_col(0), Game.translate_y_to_row(yBoundary), Game.translate_x_to_col(xBoundary), Game.translate_y_to_row(0));
         
-        let g1 = Ghost.new(0, 0, 0);
-        
+        let g1 = Ghost.new(5, 1, 1, 2);
+        let map = Map.new(0);
+        let time = 0;
+        do map.render_map();
         while (true){
-            do g1.update_direction();
+            do g1.update_direction(map);
             do g1.erase();
             do g1.move();
             do g1.draw();
-            let t = t - 1;
+            let time = time + 1;
             do Sys.wait(100);
         }
 
@@ -49,6 +53,8 @@ class Game {
         let btmSide = 16;
         let xBoundary = 287;
         let yBoundary = 223;
+        let randomA = 1;
+        let randomB = 0;
         return;
     }
     function int translate_x_to_col(int x){
@@ -69,7 +75,42 @@ class Game {
         }
         return false;
     }
+    function boolean ooxb_chunk(int x){
+        if ((x < 0) | (x > 35)){
+            return true;
+        }
+        return false;
+    }
+    function boolean ooyb_chunk(int y){
+        if ((y < 0) | (y > 27)){
+            return true;
+        }
+        return false;
+    }
+    
     function int translate_pixel_to_chunk(int x){
         return (x / 8);
+    }
+    function boolean is_chunk_start(int x){
+        var int temp;
+        let temp = x / 8;
+        if ((temp * 8) = x){
+            return true;
+        }
+        return false;
+    }
+
+    function int random(Array data, int size){
+        var int ind;
+        var int temp;
+        var int key;
+        let temp = time;
+        let key = randomA + randomB;
+        let key = (key - ((key / 17) * 17));
+        let randomA = randomB;
+        let randomB = key;
+        let temp = (((temp & (~key)) | ((~temp) & key)));
+        let ind = (temp - ((temp / size) * size));
+        return data[ind];
     }
 }

@@ -2,16 +2,19 @@ class Main {
     // entry point
     function void main(){
         var Game game;
+
         do MoveableObj.init();
         do Game.init();
-        do Output.printString("hello");
         do Ghost.init();
-      
+        do Map.init();
+        
         let game = Game.new();
         do game.run();
+        
         do game.dispose();
         do MoveableObj.release();
         do Ghost.release();
+        do Map.release();
         return;
     }
 }
