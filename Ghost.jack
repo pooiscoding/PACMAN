@@ -5,8 +5,12 @@ class Ghost {
     // private
     field MoveableObj prototype; // simulate "inheritance" behavior
     field int state; // 0-transparent 1-weak 2-normal
-    field int image_state;
+    field int phase; // 0-scatter 1-chase
     field int id;
+    field int targetXChunk;
+    field int targetYChunk;
+    field int image_state;
+
     // public
     // initializer
     function void init(){
@@ -23,11 +27,13 @@ class Ghost {
     }
     // constructor
     constructor Ghost new(int Id, int startXChunk, int startYChunk, int direction){
-        let prototype = MoveableObj.new(startXChunk*8, startYChunk*8, 8, direction);
+        let prototype = MoveableObj.new(startXChunk*8, startYChunk*8, 4, direction);
         let state = 2;
         let id = Id;
         let image_state = 0;
-        
+        let phase = 0;
+        let targetXChunk = 4;
+        let targetYChunk = 19;
         return this;
     }
 
@@ -61,23 +67,16 @@ class Ghost {
             return;
         }
         
-        let originalNextXChunk = get_x_nxt_chunk(prototype.get_direction());
+        if (phase = 1){
+            return;
+        }
+        else{
+            let newDir = best_direction(map);
+        }
         
-        let originalNextYChunk = get_y_nxt_chunk(prototype.get_direction());
-        
-        if (id = 1){
-            return;
-        }
-        if (id = 2){
-            return;
-        }
-        if (id = 3){
-            return;
-        }
-        if (id = 4){
-            return;
-        }
-        if (id = 5){ // debugging random mode
+        if (false){ // debugging random mode
+            let originalNextXChunk = get_x_near_chunk(prototype.get_direction());
+            let originalNextYChunk = get_y_near_chunk(prototype.get_direction());
             if (false){
                 return;
             }
@@ -89,7 +88,7 @@ class Ghost {
                     let tempSize = 0;
                     let ind = 0;
                     while (ind < 4){
-                        if (~(map.get_chunk_info(get_x_nxt_chunk(ind), get_y_nxt_chunk(ind)) = -1)){
+                        if (~(map.get_chunk_info(get_x_near_chunk(ind), get_y_near_chunk(ind)) = -1)){
                             let temp[tempSize] = ind;
                             let tempSize = tempSize + 1;
                         }
@@ -130,7 +129,66 @@ class Ghost {
         do Screen.drawRectangle(Game.translate_x_to_col(get_x()), Game.translate_y_to_row(get_y()+16), Game.translate_x_to_col(get_x()+16), Game.translate_y_to_row(get_y()));
         return;
     }
-
+    
+    method int best_direction(Map map){
+        var int ind;
+        var Array validMoves;
+        var int validMoveNum;
+        var int preventedDir;
+        var int curBestDir;
+        var int curDistance;
+        var int tempDistance;
+        let preventedDir = MoveableObj.oposite_direction(prototype.get_direction());
+        let validMoves = Array.new(3);
+        let validMoveNum = 0;
+        let ind = 0;
+        while (ind < 4){
+            if ( ( ~ (ind = preventedDir) ) & (valid_move_direction(ind, map))) {
+                let validMoves[validMoveNum] = ind;
+                let validMoveNum = validMoveNum + 1;
+            }
+            let ind = ind + 1;
+        }
+        if (validMoveNum = 0){
+            return preventedDir;
+        }
+        let curBestDir = validMoves[0];
+        let curDistance = distance_between_target(get_x_nxt_chunk(validMoves[0]), get_y_nxt_chunk(validMoves[0]));
+        let ind = 1;
+        while (ind < validMoveNum){
+            let tempDistance = distance_between_target(get_x_nxt_chunk(validMoves[ind]), get_y_nxt_chunk(validMoves[ind]));
+            if (tempDistance < curDistance){
+                let curBestDir = validMoves[ind];
+            }
+            let ind = ind + 1;
+        }
+        do validMoves.dispose();
+        return curBestDir;
+    }
+    method int distance_between_target(int chunkX, int chunkY){
+        return (((chunkX - targetXChunk)*(chunkX - targetXChunk)) + ((chunkY - targetYChunk)*(chunkY - targetYChunk)));
+    }
+    method boolean valid_move_direction(int dir, Map map){
+        if ((dir = 0) | (dir = 2)){
+            if (map.get_chunk_info(get_x_near_chunk(dir), get_y_chunk()) = -1){
+                return false;
+            }
+            if (map.get_chunk_info(get_x_near_chunk(dir), (get_y_chunk()+1)) = -1){
+                return false;
+            }
+            return true;
+        }
+        if ((dir = 1) | (dir = 3)){
+            if (map.get_chunk_info(get_x_chunk(), get_y_near_chunk(dir)) = -1){
+                return false;
+            }
+            if (map.get_chunk_info((get_x_chunk()+1), get_y_near_chunk(dir)) = -1){
+                return false;
+            }
+            return true;
+        }
+        return true;
+    }
     // to simulate "inheritance" behavior, put all the public methods here
     method void move(){
         do prototype.move();
@@ -153,6 +211,12 @@ class Ghost {
     }
     method int get_y_nxt_chunk(int dir){
         return prototype.get_y_nxt_chunk(dir);
+    }
+    method int get_x_near_chunk(int dir){
+        return prototype.get_x_near_chunk(dir);
+    }
+    method int get_y_near_chunk(int dir){
+        return prototype.get_y_near_chunk(dir);
     }
 
     function Array generate_ghost_image(int state){

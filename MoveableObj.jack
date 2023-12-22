@@ -53,19 +53,41 @@ class MoveableObj {
     method int get_y_chunk(){
         return (y / 8);
     }
-    method int get_x_nxt_chunk(int dir){
+    method int get_x_near_chunk(int dir){
         if (dir = 0){
             return (get_x_chunk()+dx[dir]+1);
         }
         return (get_x_chunk()+dx[dir]);
     }
-    method int get_y_nxt_chunk(int dir){
+    method int get_x_nxt_chunk(int dir){
+        return (get_x_chunk()+dx[dir]);
+    }
+    method int get_y_near_chunk(int dir){
         if (dir = 3){
             return (get_y_chunk()+dy[dir]+1);
         }
         return (get_y_chunk()+dy[dir]);
     }
-    
+    method int get_y_nxt_chunk(int dir){
+        return (get_y_chunk()+dy[dir]);
+    }
+    function int oposite_direction(int dir){
+        if (dir = 0){
+            return 2;
+        }
+        if (dir = 1){
+            return 3;
+        }
+        if (dir = 2){
+            return 0;
+        }
+        if (dir = 3){
+            return 1;
+        }
+        return -1;
+    }
+
+
     // protected
     // constructor
     constructor MoveableObj new(int startX, int startY, int startSpeed, int startDir){
