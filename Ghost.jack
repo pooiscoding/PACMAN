@@ -34,7 +34,7 @@ class Ghost {
     }
     // constructor
     constructor Ghost new(int Id, int startXChunk, int startYChunk, int direction){
-        let prototype = MoveableObj.new(startXChunk*8, startYChunk*8, 4, direction);
+        let prototype = MoveableObj.new(startXChunk*8, startYChunk*8, 2, direction);
         let id = Id;
         let image_state = 0;
         do set_back_to_init(true);
@@ -74,6 +74,7 @@ class Ghost {
             do set_back_to_init(false);
             do update_target(pacman);
         }
+
         if (is_normal() & (~(timeCounter > 0))){
             do change_phase();
         }
@@ -110,7 +111,7 @@ class Ghost {
 
     // interface-4 erase() -> erase the ghost on the screen
     method void erase(){
-        do Screen.setColor(false); // white
+        do Screen.setColor(false);
         do Screen.drawRectangle(Game.translate_x_to_col(get_x()), Game.translate_y_to_row(get_y()+16), Game.translate_x_to_col(get_x()+16), Game.translate_y_to_row(get_y()));
         return;
     }
@@ -183,12 +184,15 @@ class Ghost {
         else{
             let phase = 0;
             if (id = 3){
-                let timeCounter = 5;
-            }else{
                 let timeCounter = 7;
+            }else{
+                let timeCounter = 10;
             }
         }
         return;
+    }
+    method int get_timer(){
+        return timeCounter;
     }
     method int distance_between_target(int chunkX, int chunkY){
         return (((chunkX - targetXChunk)*(chunkX - targetXChunk)) + ((chunkY - targetYChunk)*(chunkY - targetYChunk)));
@@ -272,27 +276,27 @@ class Ghost {
         if (id = 1){
             let targetXChunk = 2;
             let targetYChunk = 26;
-            let timeCounter = 7;
+            let timeCounter = 10;
         }
         if (id = 2){
             let targetXChunk = 32;
             let targetYChunk = 26;
-            let timeCounter = 7;
+            let timeCounter = 10;
         }
         if (id = 3){
             let targetXChunk = 2;
             let targetYChunk = 1;
-            let timeCounter = 5;
+            let timeCounter = 7;
         }
         if (id = 4){
             let targetXChunk = 32;
             let targetYChunk = 1;
             if (fg){
-                let timeCounter = 5;
+                let timeCounter = 7;
             }
             else{
                 let phase = 1;
-                let timeCounter = 0;
+                let timeCounter = 100;
             }
         }
         return;
