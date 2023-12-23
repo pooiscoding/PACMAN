@@ -14,14 +14,20 @@ class Ghost {
     // public
     // initializer
     function void init(){
-        let ghost_image = Array.new(2);
+        let ghost_image = Array.new(5);
         let ghost_image[0] = Ghost.generate_ghost_image(0);
         let ghost_image[1] = Ghost.generate_ghost_image(1);
+        let ghost_image[2] = Ghost.generate_ghost_image(2);
+        let ghost_image[3] = Ghost.generate_ghost_image(3);
+        let ghost_image[4] = Ghost.generate_ghost_image(4);
         return;
     }
     function void release(){
         do Ghost.release_ghost_image(ghost_image[0]);
         do Ghost.release_ghost_image(ghost_image[1]);
+        do Ghost.release_ghost_image(ghost_image[2]);
+        do Ghost.release_ghost_image(ghost_image[3]);
+        do Ghost.release_ghost_image(ghost_image[4]);
         do ghost_image.dispose();
         return;
     }
@@ -67,6 +73,9 @@ class Ghost {
     }
     method void set_transparent(){
         let state = 0;
+        let phase = 0;
+        do prototype.set_dir(MoveableObj.oposite_direction(prototype.get_direction()));
+        do update_target(0);
         return;
     }
     // interface-2 update_direction() -> set the direction of the ghost
@@ -77,13 +86,11 @@ class Ghost {
         if ((~(Game.is_chunk_start(get_x()))) | (~(Game.is_chunk_start(get_y())))){
             return;
         }
-        
+        // if (is_transparent() )
         if (phase = 1){
             do update_target(pacman);
             let newDir = best_direction(map);
-            return;
-        }
-        else{
+        }else{
             let newDir = best_direction(map);
         }
 
@@ -118,7 +125,10 @@ class Ghost {
         return;
     }
     method void set_frightened(){
+        let phase = 0;
         let state = 1;
+        do prototype.set_dir(MoveableObj.oposite_direction(prototype.get_direction()));
+        do update_target(0);
         return;
     }
 
@@ -149,6 +159,9 @@ class Ghost {
         }
         if (validMoveNum = 0){
             return preventedDir;
+        }
+        if (is_frightened()){
+            return Game.random(validMoves, validMoveNum);
         }
         let curBestDir = validMoves[0];
         let curDistance = distance_between_target(get_x_nxt_chunk(validMoves[0]), get_y_nxt_chunk(validMoves[0]));
@@ -188,27 +201,50 @@ class Ghost {
         return true;
     }
     method void update_target(Pacman pacman){
-        if (phase = 1){
-            let targetXChunk = pacman.get_x_chunk();
-            let targetYChunk = pacman.get_y_chunk();
+        if (is_frightened()){
+            return;
+        }
+        if (is_transparent()){
+            let targetXChunk = 15;
+            let targetYChunk = 12;
             return;
         }
         if (id = 1){
+            if (phase = 1){
+                let targetXChunk = pacman.get_x_chunk();
+                let targetYChunk = pacman.get_y_chunk();
+                return;
+            }
             let targetXChunk = 2;
             let targetYChunk = 26;
             return;
         }
         if (id = 2){
+            if (phase = 1){
+                let targetXChunk = pacman.get_x_chunk();
+                let targetYChunk = pacman.get_y_chunk();
+                return;
+            }
             let targetXChunk = 32;
             let targetYChunk = 26;
             return;
         }
         if (id = 3){
+            if (phase = 1){
+                let targetXChunk = pacman.get_x_chunk();
+                let targetYChunk = pacman.get_y_chunk();
+                return;
+            }
             let targetXChunk = 2;
             let targetYChunk = 1;
             return;
         }
         if (id = 4){
+            if (phase = 1){
+                let targetXChunk = pacman.get_x_chunk();
+                let targetYChunk = pacman.get_y_chunk();
+                return;
+            }
             let targetXChunk = 32;
             let targetYChunk = 1;
             return;
@@ -255,11 +291,11 @@ class Ghost {
             let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
             let ptrs[2] =  Draw.image_row16_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
             let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
-            let ptrs[4] =  Draw.image_row16_generator( 0, 0,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1, 0, 0);
-            let ptrs[5] =  Draw.image_row16_generator( 0, 0,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1, 0);
-            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1, 0);
-            let ptrs[7] =  Draw.image_row16_generator( 0,-1,-1,-1, 0, 0,-1, 0,-1,-1, 0, 0,-1, 0,-1, 0);
-            let ptrs[8] =  Draw.image_row16_generator( 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 0);
+            let ptrs[4] =  Draw.image_row16_generator( 0, 0,-1,-1,-1, 1, 1,-1,-1,-1,-1, 1, 1,-1, 0, 0);
+            let ptrs[5] =  Draw.image_row16_generator( 0, 0,-1,-1, 1, 1, 1, 1,-1,-1, 1, 1, 1, 1,-1, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1, 1,-1,-1, 1,-1,-1, 1,-1,-1, 1,-1, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0,-1,-1,-1, 1, 1,-1, 1,-1,-1, 1, 1,-1, 1,-1, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0,-1,-1,-1,-1, 1, 1,-1,-1,-1,-1, 1, 1,-1,-1, 0);
             let ptrs[9] =  Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
             let ptrs[10] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
             let ptrs[11] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
@@ -273,11 +309,11 @@ class Ghost {
             let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
             let ptrs[2] =  Draw.image_row16_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
             let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
-            let ptrs[4] =  Draw.image_row16_generator( 0, 0,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1, 0, 0);
-            let ptrs[5] =  Draw.image_row16_generator( 0, 0,-1,-1, 0, 0,-1, 0,-1,-1, 0, 0,-1, 0,-1, 0);
-            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1,-1, 0,-1, 0);
-            let ptrs[7] =  Draw.image_row16_generator( 0,-1,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1, 0);
-            let ptrs[8] =  Draw.image_row16_generator( 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 0);
+            let ptrs[4] =  Draw.image_row16_generator( 0, 0,-1,-1,-1, 0, 1,-1,-1,-1,-1, 1, 1,-1, 0, 0);
+            let ptrs[5] =  Draw.image_row16_generator( 0, 0,-1,-1, 0, 1,-1, 1,-1,-1, 1, 1,-1, 1,-1, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1, 1,-1,-1, 1,-1,-1, 1,-1,-1, 1,-1, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0,-1,-1,-1, 1, 1, 1, 1,-1,-1, 1, 1, 1, 1,-1, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0,-1,-1,-1,-1, 1, 1,-1,-1,-1,-1, 1, 1,-1,-1, 0);
             let ptrs[9] =  Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
             let ptrs[10] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
             let ptrs[11] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
@@ -286,10 +322,70 @@ class Ghost {
             let ptrs[14] = Draw.image_row16_generator( 0, 0,-1,-1, 0, 0, 0,-1,-1, 0, 0, 0,-1,-1, 0, 0);
             let ptrs[15] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
+        if (state = 2){
+            let ptrs[0] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
+            let ptrs[2] =  Draw.image_row16_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
+            let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[4] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[5] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1,-1,-1, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0,-1,-1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1,-1,-1, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[9] =  Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[10] = Draw.image_row16_generator( 0,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 0);
+            let ptrs[11] = Draw.image_row16_generator( 0,-1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1,-1, 0);
+            let ptrs[12] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[13] = Draw.image_row16_generator( 0,-1,-1, 0,-1,-1,-1, 0, 0,-1,-1,-1, 0,-1,-1, 0);
+            let ptrs[14] = Draw.image_row16_generator( 0,-1, 0, 0, 0,-1,-1, 0, 0,-1,-1, 0, 0, 0,-1, 0);
+            let ptrs[15] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+        if (state = 3){
+            let ptrs[0] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
+            let ptrs[2] =  Draw.image_row16_generator( 0, 0, 0, 0,-1,-1, 1, 1, 1, 1,-1,-1, 0, 0, 0, 0);
+            let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0,-1,-1, 1, 1, 1, 1, 1, 1,-1,-1, 0, 0, 0);
+            let ptrs[4] =  Draw.image_row16_generator( 0, 0,-1,-1, 1, 1, 1, 1, 1, 1, 1, 1,-1,-1, 0, 0);
+            let ptrs[5] =  Draw.image_row16_generator( 0, 0,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1, 1,-1, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0,-1,-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,-1, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0,-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,-1, 0);
+            let ptrs[9] =  Draw.image_row16_generator( 0,-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,-1, 0);
+            let ptrs[10] = Draw.image_row16_generator( 0,-1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1,-1, 0);
+            let ptrs[11] = Draw.image_row16_generator( 0,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 0);
+            let ptrs[12] = Draw.image_row16_generator( 0,-1, 1, 1, 1,-1, 1, 1, 1, 1, 1, 1, 1, 1,-1, 0);
+            let ptrs[13] = Draw.image_row16_generator( 0,-1,-1, 1,-1, 0,-1, 1,-1,-1,-1,-1,-1, 1,-1, 0);
+            let ptrs[14] = Draw.image_row16_generator( 0, 0,-1,-1, 0, 0, 0,-1,-1, 0, 0, 0,-1,-1, 0, 0);
+            let ptrs[15] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+        if (state = 4){
+            let ptrs[0] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[2] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0);
+            let ptrs[4] =  Draw.image_row16_generator( 0, 0, 0, 0,-1, 1, 1,-1, 0, 0,-1, 1, 1,-1, 0, 0);
+            let ptrs[5] =  Draw.image_row16_generator( 0, 0, 0,-1, 1, 1, 1, 1,-1,-1, 1, 1, 1, 1,-1, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0, 0,-1, 1,-1,-1, 1,-1,-1, 1,-1,-1, 1,-1, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0, 0, 0,-1, 1, 1,-1, 1,-1,-1, 1, 1,-1, 1,-1, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0, 0, 0, 0,-1, 1, 1,-1, 0, 0,-1, 1, 1,-1, 0, 0);
+            let ptrs[9] =  Draw.image_row16_generator( 0, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0,-1,-1, 0, 0, 0);
+            let ptrs[10] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[11] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[12] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[13] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[14] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[15] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
         return ptrs;
     }
 
     method int img_index(){
+        if (is_transparent()){
+            return 4;
+        }
+        if (is_frightened()){
+            return (2 + image_state);
+        }
         return image_state;
     }
     function void release_ghost_image(Array ptrs){

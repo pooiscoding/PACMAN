@@ -30,11 +30,6 @@ class Game {
         var Ghost tempGhost;
         var Pacman p1;
         var int counter;
-        // temp
-        do Screen.setColor(true); // black
-        do Screen.drawRectangle(Game.translate_x_to_col(-1), Game.translate_y_to_row(yBoundary+1), Game.translate_x_to_col(xBoundary+1), Game.translate_y_to_row(-1));
-        do Screen.setColor(false); // white
-        do Screen.drawRectangle(Game.translate_x_to_col(0), Game.translate_y_to_row(yBoundary), Game.translate_x_to_col(xBoundary), Game.translate_y_to_row(0));
 
         let ghosts = Array.new(4);
         let counter = 1;
@@ -60,7 +55,9 @@ class Game {
                 do tempGhost.draw();
                 let counter = counter + 1;
             }
-            
+            do p1.update_direction(map);
+            do p1.erase();
+            do p1.move();
             do p1.draw();
             let time = time + 1;
             
@@ -75,6 +72,7 @@ class Game {
             do tempGhost.dispose();
             let counter = counter + 1;
         }
+        do ghosts.dispose();
         
         return;
     }
@@ -229,13 +227,11 @@ class Game {
         var int ind;
         var int temp;
         var int key;
-        let temp = time;
-        let key = randomA + randomB;
-        let key = (key - ((key / 17) * 17));
+        let key = randomA + randomB + time;
+        let key = (key - ((key / 127) * 127));
         let randomA = randomB;
         let randomB = key;
-        let temp = (((temp & (~key)) | ((~temp) & key)));
-        let ind = (temp - ((temp / size) * size));
+        let ind = (key - ((key / size) * size));
         return data[ind];
     }
 }

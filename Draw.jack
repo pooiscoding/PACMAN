@@ -14,10 +14,11 @@ class Draw {
                 }else{
                     let lookJ = j;
                 }
-                if (temp[lookJ]){
+                if (temp[lookJ] = -1){
                     do Screen.setColor(true);
                     do Screen.drawPixel(screenX + j, screenY + 1 - size + i);
-                }else{
+                }
+                if (temp[lookJ] = 1){
                     do Screen.setColor(false);
                     do Screen.drawPixel(screenX + j, screenY + 1 - size + i);
                 }
