@@ -32,8 +32,22 @@ class Ghost {
         let id = Id;
         let image_state = 0;
         let phase = 0;
-        let targetXChunk = 4;
-        let targetYChunk = 19;
+        if (id = 1){
+            let targetXChunk = 2;
+            let targetYChunk = 26;
+        }
+        if (id = 2){
+            let targetXChunk = 32;
+            let targetYChunk = 26;
+        }
+        if (id = 3){
+            let targetXChunk = 2;
+            let targetYChunk = 1;
+        }
+        if (id = 4){
+            let targetXChunk = 32;
+            let targetYChunk = 1;
+        }
         return this;
     }
 
@@ -53,52 +67,23 @@ class Ghost {
     }
 
     // interface-2 update_direction() -> set the direction of the ghost
-    method void update_direction(Map map){
+    method void update_direction(Map map, Pacman pacman){
         
         var int newDir;
-        var int originalNextXChunk;
-        var int originalNextYChunk;
-        var Array temp;
-        var int tempSize;
-        var int ind;
-        let newDir = -1;
         
         if ((~(Game.is_chunk_start(get_x()))) | (~(Game.is_chunk_start(get_y())))){
             return;
         }
         
         if (phase = 1){
+            do update_target(pacman);
+            let newDir = best_direction(map);
             return;
         }
         else{
             let newDir = best_direction(map);
         }
-        
-        if (false){ // debugging random mode
-            let originalNextXChunk = get_x_near_chunk(prototype.get_direction());
-            let originalNextYChunk = get_y_near_chunk(prototype.get_direction());
-            if (false){
-                return;
-            }
-            else{
-                // random
-                
-                if (map.get_chunk_info(originalNextXChunk, originalNextYChunk) = -1){
-                    let temp = Array.new(4);
-                    let tempSize = 0;
-                    let ind = 0;
-                    while (ind < 4){
-                        if (~(map.get_chunk_info(get_x_near_chunk(ind), get_y_near_chunk(ind)) = -1)){
-                            let temp[tempSize] = ind;
-                            let tempSize = tempSize + 1;
-                        }
-                        let ind = ind + 1;
-                    }
-                    let newDir = Game.random(temp, tempSize);
-                    do temp.dispose();
-                }
-            }
-        }
+
         do prototype.set_dir(newDir);
         return;
     }
@@ -189,6 +174,35 @@ class Ghost {
         }
         return true;
     }
+    method void update_target(Pacman pacman){
+        if (phase = 1){
+            let targetXChunk = pacman.get_x_chunk();
+            let targetYChunk = pacman.get_y_chunk();
+            return;
+        }
+        if (id = 1){
+            let targetXChunk = 2;
+            let targetYChunk = 26;
+            return;
+        }
+        if (id = 2){
+            let targetXChunk = 32;
+            let targetYChunk = 26;
+            return;
+        }
+        if (id = 3){
+            let targetXChunk = 2;
+            let targetYChunk = 1;
+            return;
+        }
+        if (id = 4){
+            let targetXChunk = 32;
+            let targetYChunk = 1;
+            return;
+        }
+        return;
+    }
+
     // to simulate "inheritance" behavior, put all the public methods here
     method void move(){
         do prototype.move();

@@ -25,27 +25,49 @@ class Game {
     method void run(){
         
         var Map map;
-        var Ghost g1;
+        var Array ghosts; // 4 ghosts
+        var Ghost tempGhost;
+        var Pacman p1;
+        var int counter;
         // temp
         do Screen.setColor(true); // black
         do Screen.drawRectangle(Game.translate_x_to_col(-1), Game.translate_y_to_row(yBoundary+1), Game.translate_x_to_col(xBoundary+1), Game.translate_y_to_row(-1));
         do Screen.setColor(false); // white
         do Screen.drawRectangle(Game.translate_x_to_col(0), Game.translate_y_to_row(yBoundary), Game.translate_x_to_col(xBoundary), Game.translate_y_to_row(0));
-        
-        let g1 = Ghost.new(5, 1, 1, 2);
+
+        let ghosts = Array.new(4);
+        let counter = 1;
+        while (counter < 5){ // 1-4
+            let tempGhost = Ghost.new(counter, 15, 12, 2);
+            let ghosts[counter-1] = tempGhost;
+            let counter = counter + 1;
+        }
+
+        let p1 = Pacman.new(4, 20, 0);
         let map = Map.new(0);
         let time = 0;
         do map.render_map();
+        
         while (true){
-            do g1.update_direction(map);
-            do g1.erase();
-            do g1.move();
-            do g1.draw();
+            let counter = 0;
+            while (counter < 4){
+                let tempGhost = ghosts[counter];
+                do tempGhost.update_direction(map, p1);
+                do tempGhost.erase();
+                do map.restore(tempGhost.get_x_chunk(), tempGhost.get_y_chunk());
+                do tempGhost.move();
+                do tempGhost.draw();
+                let counter = counter + 1;
+            }
+            
+            do p1.draw();
             let time = time + 1;
+            
             do Sys.wait(100);
         }
 
         do g1.dispose();
+        do p1.dispose();
         return;
     }    
     function void init(){

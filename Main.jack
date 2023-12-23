@@ -6,6 +6,7 @@ class Main {
         do MoveableObj.init();
         do Game.init();
         do Ghost.init();
+        do Pacman.init();
         do Map.init();
         
         let game = Game.new();
@@ -14,6 +15,7 @@ class Main {
         do game.dispose();
         do MoveableObj.release();
         do Ghost.release();
+        do Pacman.release();
         do Map.release();
         return;
     }
