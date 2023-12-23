@@ -10,9 +10,13 @@ class Main {
         do Map.init();
         
         let game = Game.new();
-        do game.run();
-        
+        if (game.run()){
+            do game.win();
+        }else{
+            do game.lose();
+        }
         do game.dispose();
+        
         do MoveableObj.release();
         do Ghost.release();
         do Pacman.release();

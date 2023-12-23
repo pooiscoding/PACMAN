@@ -1,8 +1,11 @@
 class Map {
     static Array obstacleImg;
     static Array dotImg;
+    static Array effectDotImg;
+    static Array bigDotImg;
     field Array mapInfo; // 28row, 36col
     field int seed;
+    field int dotRemain;
 
     method void render_map(){
         var int i;
@@ -20,6 +23,12 @@ class Map {
                 if (temp[j] = 1){
                     do Draw.render(Game.translate_x_to_col(j * 8 + 4),  Game.translate_y_to_row(i * 8 + 4), dotImg, 8, false);
                 }
+                if (temp[j] = 2){
+                    do Draw.render(Game.translate_x_to_col(j * 8 + 4),  Game.translate_y_to_row(i * 8 + 4), effectDotImg, 8, false);
+                }
+                if (temp[j] = 3){
+                    do Draw.render(Game.translate_x_to_col(j * 8 + 4),  Game.translate_y_to_row(i * 8 + 4), bigDotImg, 8, false);
+                }
                 let j = j + 1;
             }
             let i = i + 1;
@@ -29,6 +38,7 @@ class Map {
     constructor Map new(int Seed){
         let mapInfo = Map.init_map_info(Seed);
         let seed = Seed;
+        let dotRemain = 115;
         return this;
     }
     method int get_chunk_info(int x, int y){
@@ -40,7 +50,16 @@ class Map {
         var Array temp;
         let temp = mapInfo[y];
         let temp[x] = 0;
+        do Screen.setColor(false); // white
+        do Screen.drawRectangle(Game.translate_x_to_col(x*8), Game.translate_y_to_row(y*8+16), Game.translate_x_to_col(x*8+16), Game.translate_y_to_row(y*8));
         return;
+    }
+    method void reduce_dotRemain(){
+        let dotRemain = dotRemain - 1;
+        return;
+    }
+    method int get_dotRemain(){
+        return dotRemain;
     }
     method void restore(int x, int y){
         var Array temp;
@@ -54,6 +73,24 @@ class Map {
         if ((~Game.ooxb_chunk(x-1)) & (temp[x-1] = 1)){
             do Draw.render(Game.translate_x_to_col((x-1) * 8 + 4),  Game.translate_y_to_row(y * 8 + 4), dotImg, 8, false);
         }
+        if (temp[x] = 2){
+            do Draw.render(Game.translate_x_to_col(x * 8 + 4),  Game.translate_y_to_row(y * 8 + 4), effectDotImg, 8, false);
+        }
+        if ((~Game.ooxb_chunk(x+1)) & (temp[x+1] = 2)){
+            do Draw.render(Game.translate_x_to_col((x+1) * 8 + 4),  Game.translate_y_to_row(y * 8 + 4), effectDotImg, 8, false);
+        }
+        if ((~Game.ooxb_chunk(x-1)) & (temp[x-1] = 2)){
+            do Draw.render(Game.translate_x_to_col((x-1) * 8 + 4),  Game.translate_y_to_row(y * 8 + 4), effectDotImg, 8, false);
+        }
+        if (temp[x] = 3){
+            do Draw.render(Game.translate_x_to_col(x * 8 + 4),  Game.translate_y_to_row(y * 8 + 4), bigDotImg, 8, false);
+        }
+        if ((~Game.ooxb_chunk(x+1)) & (temp[x+1] = 3)){
+            do Draw.render(Game.translate_x_to_col((x+1) * 8 + 4),  Game.translate_y_to_row(y * 8 + 4), bigDotImg, 8, false);
+        }
+        if ((~Game.ooxb_chunk(x-1)) & (temp[x-1] = 3)){
+            do Draw.render(Game.translate_x_to_col((x-1) * 8 + 4),  Game.translate_y_to_row(y * 8 + 4), bigDotImg, 8, false);
+        }
         if (~Game.ooyb_chunk(y+1)){
             let temp = mapInfo[y+1];
             if (temp[x] = 1){
@@ -65,6 +102,24 @@ class Map {
             if ((~Game.ooxb_chunk(x-1)) & (temp[x-1] = 1)){
                 do Draw.render(Game.translate_x_to_col((x-1) * 8 + 4),  Game.translate_y_to_row((y+1) * 8 + 4), dotImg, 8, false);
             }
+            if (temp[x] = 2){
+                do Draw.render(Game.translate_x_to_col(x * 8 + 4),  Game.translate_y_to_row((y+1) * 8 + 4), effectDotImg, 8, false);
+            }
+            if ((~Game.ooxb_chunk(x+1)) & (temp[x+1] = 2)){
+                do Draw.render(Game.translate_x_to_col((x+1) * 8 + 4),  Game.translate_y_to_row((y+1) * 8 + 4), effectDotImg, 8, false);
+            }
+            if ((~Game.ooxb_chunk(x-1)) & (temp[x-1] = 2)){
+                do Draw.render(Game.translate_x_to_col((x-1) * 8 + 4),  Game.translate_y_to_row((y+1) * 8 + 4), effectDotImg, 8, false);
+            }
+            if (temp[x] = 3){
+                do Draw.render(Game.translate_x_to_col(x * 8 + 4),  Game.translate_y_to_row((y+1) * 8 + 4), bigDotImg, 8, false);
+            }
+            if ((~Game.ooxb_chunk(x+1)) & (temp[x+1] = 3)){
+                do Draw.render(Game.translate_x_to_col((x+1) * 8 + 4),  Game.translate_y_to_row((y+1) * 8 + 4), bigDotImg, 8, false);
+            }
+            if ((~Game.ooxb_chunk(x-1)) & (temp[x-1] = 3)){
+                do Draw.render(Game.translate_x_to_col((x-1) * 8 + 4),  Game.translate_y_to_row((y+1) * 8 + 4), bigDotImg, 8, false);
+            }
         }
         if (~Game.ooyb_chunk(y-1)){
             let temp = mapInfo[y-1];
@@ -75,6 +130,24 @@ class Map {
                 do Draw.render(Game.translate_x_to_col((x+1) * 8 + 4),  Game.translate_y_to_row((y-1) * 8 + 4), dotImg, 8, false);
             }
             if ((~Game.ooxb_chunk(x-1)) & (temp[x-1] = 1)){
+                do Draw.render(Game.translate_x_to_col((x-1) * 8 + 4),  Game.translate_y_to_row((y-1) * 8 + 4), dotImg, 8, false);
+            }
+            if (temp[x] = 2){
+                do Draw.render(Game.translate_x_to_col(x * 8 + 4),  Game.translate_y_to_row((y-1) * 8 + 4), effectDotImg, 8, false);
+            }
+            if ((~Game.ooxb_chunk(x+1)) & (temp[x+1] = 2)){
+                do Draw.render(Game.translate_x_to_col((x+1) * 8 + 4),  Game.translate_y_to_row((y-1) * 8 + 4), effectDotImg, 8, false);
+            }
+            if ((~Game.ooxb_chunk(x-1)) & (temp[x-1] = 2)){
+                do Draw.render(Game.translate_x_to_col((x-1) * 8 + 4),  Game.translate_y_to_row((y-1) * 8 + 4), effectDotImg, 8, false);
+            }
+            if (temp[x] = 3){
+                do Draw.render(Game.translate_x_to_col(x * 8 + 4),  Game.translate_y_to_row((y-1) * 8 + 4), dotImg, 8, false);
+            }
+            if ((~Game.ooxb_chunk(x+1)) & (temp[x+1] = 3)){
+                do Draw.render(Game.translate_x_to_col((x+1) * 8 + 4),  Game.translate_y_to_row((y-1) * 8 + 4), dotImg, 8, false);
+            }
+            if ((~Game.ooxb_chunk(x-1)) & (temp[x-1] = 3)){
                 do Draw.render(Game.translate_x_to_col((x-1) * 8 + 4),  Game.translate_y_to_row((y-1) * 8 + 4), dotImg, 8, false);
             }
         }
@@ -96,11 +169,15 @@ class Map {
     function void init(){
         let obstacleImg = Map.generate_obstacle_image();
         let dotImg = Map.generate_dot_image();
+        let effectDotImg = Map.generate_effectDot_image();
+        let bigDotImg = Map.generate_bigDot_image();
         return;
     }
     function void release(){
-        do Map.release_obstacle_image();
-        do Map.release_dot_image();
+        do Map.release_image(obstacleImg);
+        do Map.release_image(dotImg);
+        do Map.release_image(effectDotImg);
+        do Map.release_image(bigDotImg);
         return;
     }
     function Array generate_obstacle_image(){
@@ -133,43 +210,58 @@ class Map {
         
         return ptrs;
     }
-    function void release_obstacle_image(){
-        var int ind;
-        var Array temp;
-        let ind = 0;
-        while (ind < 8){
-            let temp = obstacleImg[ind];
-            do temp.dispose();
-            let ind = ind + 1;
-        }
-        do obstacleImg.dispose();
-        return;
+    function Array generate_effectDot_image(){
+        var Array ptrs;
+        let ptrs = Array.new(8);
+        let ptrs[0] =  Draw.image_row8_generator(-1,-1, 0, 0, 0, 0,-1,-1);
+        let ptrs[1] =  Draw.image_row8_generator(-1,-1, 0, 0,-1, 0,-1,-1);
+        let ptrs[2] =  Draw.image_row8_generator( 0, 0, 0,-1,-1, 0, 0, 0);
+        let ptrs[3] =  Draw.image_row8_generator( 0,-1,-1,-1,-1,-1, 0, 0);
+        let ptrs[4] =  Draw.image_row8_generator( 0, 0,-1,-1,-1,-1,-1, 0);
+        let ptrs[5] =  Draw.image_row8_generator( 0, 0, 0,-1,-1, 0, 0, 0);
+        let ptrs[6] =  Draw.image_row8_generator(-1,-1, 0,-1, 0, 0,-1,-1);
+        let ptrs[7] =  Draw.image_row8_generator(-1,-1, 0, 0, 0, 0,-1,-1);
+        return ptrs;
     }
-    function void release_dot_image(){
+    function Array generate_bigDot_image(){
+        var Array ptrs;
+        let ptrs = Array.new(8);
+        let ptrs[0] =  Draw.image_row8_generator( 0, 0,-1,-1,-1,-1, 0, 0);
+        let ptrs[1] =  Draw.image_row8_generator( 0,-1,-1,-1,-1,-1,-1, 0);
+        let ptrs[2] =  Draw.image_row8_generator(-1,-1,-1,-1,-1,-1,-1,-1);
+        let ptrs[3] =  Draw.image_row8_generator(-1,-1,-1,-1,-1,-1,-1,-1);
+        let ptrs[4] =  Draw.image_row8_generator(-1,-1,-1,-1,-1,-1,-1,-1);
+        let ptrs[5] =  Draw.image_row8_generator(-1,-1,-1,-1,-1,-1,-1,-1);
+        let ptrs[6] =  Draw.image_row8_generator( 0,-1,-1,-1,-1,-1,-1, 0);
+        let ptrs[7] =  Draw.image_row8_generator( 0, 0,-1,-1,-1,-1, 0, 0);
+        return ptrs;
+    }
+
+    function void release_image(Array img){
         var int ind;
         var Array temp;
         let ind = 0;
         while (ind < 8){
-            let temp = dotImg[ind];
+            let temp = img[ind];
             do temp.dispose();
             let ind = ind + 1;
         }
-        do dotImg.dispose();
+        do img.dispose();
         return;
     }
     function Array init_map_info(int seed){
         var Array ptrs;
         let ptrs = Array.new(28);
-        // 113 dots 
+        // 105 dots-1, 3 special effect-2, 5 big dot-3 
         let ptrs[27] = Draw.map_row_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
         let ptrs[26] = Draw.map_row_generator( 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0, 0, 0,-1, 0, 0);
         let ptrs[25] = Draw.map_row_generator( 0,-1, 1, 0, 1, 0, 1, 0, 0, 1, 0,-1,-1,-1,-1, 1, 0,-1,-1,-1,-1, 1, 0, 1, 0, 1, 0,-1, 1, 0, 0, 1, 0,-1, 0, 0);
         let ptrs[24] = Draw.map_row_generator( 0,-1, 0, 0,-1,-1, 0, 0,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0, 0, 0, 0,-1, 0, 0,-1, 0, 0);
         let ptrs[23] = Draw.map_row_generator( 0,-1, 0, 0,-1,-1, 0, 0,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 1, 0, 0, 1, 0,-1, 1, 0,-1, 0, 0);
-        let ptrs[22] = Draw.map_row_generator( 0,-1, 1, 0,-1,-1, 1, 0,-1, 1, 0,-1,-1,-1,-1, 1, 0,-1,-1,-1,-1, 1, 0,-1,-1,-1,-1,-1, 0, 0,-1, 0, 0,-1, 0, 0);
+        let ptrs[22] = Draw.map_row_generator( 0,-1, 1, 0,-1,-1, 3, 0,-1, 1, 0,-1,-1,-1,-1, 1, 0,-1,-1,-1,-1, 3, 0,-1,-1,-1,-1,-1, 0, 0,-1, 0, 0,-1, 0, 0);
         let ptrs[21] = Draw.map_row_generator( 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1, 1, 0,-1, 0, 0);
-        let ptrs[20] = Draw.map_row_generator( 0,-1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0,-1, 0, 0,-1, 0, 0);
-        let ptrs[19] = Draw.map_row_generator( 0,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1, 1, 0,-1, 0, 0);
+        let ptrs[20] = Draw.map_row_generator( 0,-1, 1, 0, 2, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0,-1, 0, 0,-1, 0, 0);
+        let ptrs[19] = Draw.map_row_generator( 0,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0,-1,-1,-1,-1, 3, 0,-1, 0, 0);
         let ptrs[18] = Draw.map_row_generator( 0,-1, 0, 0,-1,-1, 0, 0, 0, 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0, 0,-1, 0, 0,-1, 0, 0);
         let ptrs[17] = Draw.map_row_generator( 0,-1, 1, 0,-1,-1, 1, 0, 0, 1, 0,-1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,-1,-1, 1, 0, 0, 1, 0,-1, 1, 0,-1, 0, 0);
         let ptrs[16] = Draw.map_row_generator( 0,-1, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0,-1, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0, 0, 0,-1, 0, 0);
@@ -179,15 +271,15 @@ class Map {
         let ptrs[12] = Draw.map_row_generator( 0,-1, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0, 0, 0,-1, 0, 0,-1, 0, 0,-1, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0, 0, 0,-1, 0, 0);
         let ptrs[11] = Draw.map_row_generator( 0,-1, 1, 0, 1, 0, 1, 0,-1, 1, 0, 0, 1, 0,-1,-1,-1,-1, 1, 0,-1, 1, 0, 1, 0, 1, 0,-1, 1, 0, 0, 1, 0,-1, 0, 0);
         let ptrs[10] = Draw.map_row_generator( 0,-1, 0, 0,-1,-1, 0, 0, 0, 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1, 0, 0, 0, 0, 0,-1, 0, 0,-1, 0, 0);
-        let ptrs[9] =  Draw.map_row_generator( 0,-1, 0, 0,-1,-1, 0, 0, 0, 1, 0,-1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0,-1,-1, 0, 0, 0, 1, 0,-1, 1, 0,-1, 0, 0);
+        let ptrs[9] =  Draw.map_row_generator( 0,-1, 0, 0,-1,-1, 0, 0, 0, 1, 0,-1, 1, 0, 1, 0, 2, 0, 1, 0, 0, 1, 0,-1,-1, 0, 0, 0, 1, 0,-1, 1, 0,-1, 0, 0);
         let ptrs[8] =  Draw.map_row_generator( 0,-1, 1, 0,-1,-1, 1, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 1, 0,-1,-1,-1,-1, 0, 0,-1, 0, 0);
         let ptrs[7] =  Draw.map_row_generator( 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1, 1, 0,-1, 0, 0);
         let ptrs[6] =  Draw.map_row_generator( 0,-1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0,-1, 0, 0,-1, 0, 0);
         let ptrs[5] =  Draw.map_row_generator( 0,-1, 0, 0,-1,-1, 0, 0,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1,-1, 0, 0,-1, 1, 0,-1, 0, 0);
         let ptrs[4] =  Draw.map_row_generator( 0,-1, 0, 0,-1,-1, 0, 0,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1, 0, 0, 0, 0, 0,-1, 0, 0,-1, 0, 0);
-        let ptrs[3] =  Draw.map_row_generator( 0,-1, 1, 0,-1,-1, 1, 0,-1, 1, 0,-1,-1,-1,-1, 1, 0,-1,-1,-1,-1, 1, 0,-1,-1, 1, 0, 0, 1, 0,-1, 1, 0,-1, 0, 0);
+        let ptrs[3] =  Draw.map_row_generator( 0,-1, 1, 0,-1,-1, 1, 0,-1, 1, 0,-1,-1,-1,-1, 1, 0,-1,-1,-1,-1, 3, 0,-1,-1, 1, 0, 0, 1, 0,-1, 2, 0,-1, 0, 0);
         let ptrs[2] =  Draw.map_row_generator( 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0, 0, 0,-1, 0, 0);
-        let ptrs[1] =  Draw.map_row_generator( 0,-1, 1, 0, 1, 0, 1, 0, 0, 1, 0,-1,-1,-1,-1, 1, 0,-1,-1,-1,-1, 1, 0, 1, 0, 1, 0,-1, 1, 0, 0, 1, 0,-1, 0, 0);
+        let ptrs[1] =  Draw.map_row_generator( 0,-1, 1, 0, 1, 0, 3, 0, 0, 1, 0,-1,-1,-1,-1, 1, 0,-1,-1,-1,-1, 1, 0, 1, 0, 1, 0,-1, 1, 0, 0, 1, 0,-1, 0, 0);
         let ptrs[0] =  Draw.map_row_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
         return ptrs;
     }

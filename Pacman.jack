@@ -30,6 +30,7 @@ class Pacman {
     constructor Pacman new(int startXChunk, int startYChunk, int direction){
         let prototype = MoveableObj.new(startXChunk*8, startYChunk*8, 8, direction);
         let image_state = 4;
+        
         return this;
     }
 
@@ -43,21 +44,36 @@ class Pacman {
     // interface-2 update_direction() -> set the direction of the pacman
     method void update_direction(Map map){
         
-        var int newDir;
-        var int originalNextXChunk;
-        var int originalNextYChunk;
-        var Array temp;
-        var int tempSize;
-        var int ind;
-        let newDir = -1;
-        
+        var char key;
+        var boolean wall;
         if ((~(Game.is_chunk_start(get_x()))) | (~(Game.is_chunk_start(get_y())))){
             return;
         }
-        
-        let originalNextXChunk = get_x_nxt_chunk(prototype.get_direction());
-        let originalNextYChunk = get_y_nxt_chunk(prototype.get_direction());
-        do prototype.set_dir(newDir);
+        let key = Keyboard.keyPressed();
+        if(key = 68){
+            let wall = valid_move_direction(0, map);
+            if(wall){
+                do prototype.set_dir(0);
+            }
+        }
+        if(key = 83){
+            let wall = valid_move_direction(1, map);
+            if(wall){
+                do prototype.set_dir(1);
+            }
+        }
+        if(key = 65){
+            let wall = valid_move_direction(2, map);
+            if(wall){
+                do prototype.set_dir(2);
+            }
+        }
+        if(key = 87){
+            let wall = valid_move_direction(3, map);
+            if(wall){
+                do prototype.set_dir(3);
+            }
+        }
         return;   
     }
 
@@ -65,7 +81,6 @@ class Pacman {
     // interface-3 draw() -> draw pacman on the screen 
     method void draw(){
         var Array image;
-        
         //右
         if(prototype.get_direction() = 0){
             if (image_state = 4){
@@ -110,8 +125,14 @@ class Pacman {
     }
 
     // to simulate "inheritance" behavior, put all the public methods here
-    method void move(){
-        do prototype.move();
+    method void move(Map map){
+        var boolean movable;
+        var int direc;
+        let direc = prototype.get_direction();
+        let movable = valid_move_direction(direc, map);
+        if(movable){
+            do prototype.move();
+        }
         return;
     }
     method int get_x(){
@@ -132,6 +153,33 @@ class Pacman {
     method int get_y_nxt_chunk(int dir){
         return prototype.get_y_nxt_chunk(dir);
     }
+    method int get_x_near_chunk(int dir){
+        return prototype.get_x_near_chunk(dir);
+    }
+    method int get_y_near_chunk(int dir){
+        return prototype.get_y_near_chunk(dir);
+    }
+    method boolean valid_move_direction(int dir, Map map){
+        if ((dir = 0) | (dir = 2)){
+            if (map.get_chunk_info(get_x_near_chunk(dir), get_y_chunk()) = -1){
+                return false;
+            }
+            if (map.get_chunk_info(get_x_near_chunk(dir), (get_y_chunk()+1)) = -1){
+                return false;
+            }
+            return true;
+        }
+        if ((dir = 1) | (dir = 3)){
+            if (map.get_chunk_info(get_x_chunk(), get_y_near_chunk(dir)) = -1){
+                return false;
+            }
+            if (map.get_chunk_info((get_x_chunk()+1), get_y_near_chunk(dir)) = -1){
+                return false;
+            }
+            return true;
+        }
+        return true;
+    }
 
     function Array generate_pacman_image(int state){
         
@@ -146,11 +194,11 @@ class Pacman {
             let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
             let ptrs[4] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
             let ptrs[5] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
-            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
-            let ptrs[7] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
-            let ptrs[8] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
-            let ptrs[9] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
-            let ptrs[10] = Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[9] =  Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[10] = Draw.image_row16_generator( 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
             let ptrs[11] = Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
             let ptrs[12] = Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
             let ptrs[13] = Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);

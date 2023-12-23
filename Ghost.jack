@@ -70,13 +70,14 @@ class Ghost {
         if ((~(Game.is_chunk_start(get_x()))) | (~(Game.is_chunk_start(get_y())))){
             return;
         }
-        if (is_transparent() & (get_x_chunk() = targetXChunk) & (get_y_chunk() = targetYChunk)){
+        if ((is_transparent() & (get_x_chunk() = targetXChunk) & (get_y_chunk() = targetYChunk)) | (is_frightened() & (~(timeCounter > 0)))){
             do set_back_to_init(false);
             do update_target(pacman);
         }
         if (is_normal() & (~(timeCounter > 0))){
             do change_phase();
         }
+        
         if (phase = 1){
             do update_target(pacman);
             let newDir = best_direction(map);
@@ -116,6 +117,7 @@ class Ghost {
     method void set_frightened(){
         let phase = 0;
         let state = 1;
+        let timeCounter = 3;
         do prototype.set_dir(MoveableObj.oposite_direction(prototype.get_direction()));
         do update_target(0);
         return;
