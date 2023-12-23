@@ -1,0 +1,255 @@
+class Pacman {
+    
+    static Array Pacman_image;
+
+    // private
+    field MoveableObj prototype; // simulate "inheritance" behavior
+    field int image_state;
+    // public
+    // initializer
+    function void init(){
+        let Pacman_image = Array.new(5);
+        let Pacman_image[0] = Pacman.generate_pacman_image(0);
+        let Pacman_image[1] = Pacman.generate_pacman_image(1);
+        let Pacman_image[2] = Pacman.generate_pacman_image(2); 
+        let Pacman_image[3] = Pacman.generate_pacman_image(3);
+        let Pacman_image[4] = Pacman.generate_pacman_image(4);
+        return;
+    }
+    function void release(){
+        do Pacman.release_pacman_image(Pacman_image[0]);
+        do Pacman.release_pacman_image(Pacman_image[1]);
+        do Pacman.release_pacman_image(Pacman_image[2]);
+        do Pacman.release_pacman_image(Pacman_image[3]);
+        do Pacman.release_pacman_image(Pacman_image[4]);
+
+        do Pacman_image.dispose();
+        return;
+    }
+    // constructor
+    constructor Pacman new(int startXChunk, int startYChunk, int direction){
+        let prototype = MoveableObj.new(startXChunk*8, startYChunk*8, 8, direction);
+        let image_state = 4;
+        return this;
+    }
+
+    // deconstructor
+    method void dispose(){
+        do prototype.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    // interface-2 update_direction() -> set the direction of the pacman
+    method void update_direction(Map map){
+        
+        var int newDir;
+        var int originalNextXChunk;
+        var int originalNextYChunk;
+        var Array temp;
+        var int tempSize;
+        var int ind;
+        let newDir = -1;
+        
+        if ((~(Game.is_chunk_start(get_x()))) | (~(Game.is_chunk_start(get_y())))){
+            return;
+        }
+        
+        let originalNextXChunk = get_x_nxt_chunk(prototype.get_direction());
+        let originalNextYChunk = get_y_nxt_chunk(prototype.get_direction());
+        do prototype.set_dir(newDir);
+        return;   
+    }
+
+
+    // interface-3 draw() -> draw pacman on the screen 
+    method void draw(){
+        var Array image;
+        
+        //右
+        if(prototype.get_direction() = 0){
+            if (image_state = 4){
+                let image_state = 0;
+            }else{
+                let image_state = 4;
+            }
+        }
+        //下
+        if(prototype.get_direction() = 1){
+            if (image_state = 4){
+                let image_state = 1;
+            }else{
+                let image_state = 4;
+            }
+        }
+        //左
+        if(prototype.get_direction() = 2){
+            if (image_state = 4){
+                let image_state = 2;
+            }else{
+                let image_state = 4;
+            }
+        }
+        //上
+        if(prototype.get_direction() = 3){
+            if (image_state = 4){
+                let image_state = 3;
+            }else{
+                let image_state = 4;
+            }
+        }
+        let image = Pacman_image[img_index()];
+        do Draw.render(Game.translate_x_to_col(get_x()), Game.translate_y_to_row(get_y()), image, 16, false);
+        return;
+    }
+
+    method void erase(){
+        do Screen.setColor(false); // white
+        do Screen.drawRectangle(Game.translate_x_to_col(get_x()), Game.translate_y_to_row(get_y()+16), Game.translate_x_to_col(get_x()+16), Game.translate_y_to_row(get_y()));
+        return;
+    }
+
+    // to simulate "inheritance" behavior, put all the public methods here
+    method void move(){
+        do prototype.move();
+        return;
+    }
+    method int get_x(){
+        return prototype.get_x();
+    } 
+    method int get_y(){
+        return prototype.get_y();
+    }
+    method int get_x_chunk(){
+        return prototype.get_x_chunk();
+    }
+    method int get_y_chunk(){
+        return prototype.get_y_chunk();
+    }
+    method int get_x_nxt_chunk(int dir){
+        return prototype.get_x_nxt_chunk(dir);
+    }
+    method int get_y_nxt_chunk(int dir){
+        return prototype.get_y_nxt_chunk(dir);
+    }
+
+    function Array generate_pacman_image(int state){
+        
+        var Array ptrs;
+        let ptrs = Array.new(16);
+
+       //圓形
+        if (state = 4){
+            let ptrs[0] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[2] =  Draw.image_row16_generator( 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
+            let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
+            let ptrs[4] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[5] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[9] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[10] = Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[11] = Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[12] = Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[13] = Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
+            let ptrs[14] = Draw.image_row16_generator( 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
+            let ptrs[15] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+
+        //右
+        if (state = 0){
+            let ptrs[0] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[2] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0);
+            let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[4] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[5] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[9] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[10] = Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
+            let ptrs[11] = Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[12] = Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[13] = Draw.image_row16_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[14] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0);
+            let ptrs[15] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+        //下
+        if (state = 1){       
+            let ptrs[0] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[2] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0);
+            let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[4] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[5] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[9] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1, 0);
+            let ptrs[10] = Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1, 0);
+            let ptrs[11] = Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1, 0, 0);
+            let ptrs[12] = Draw.image_row16_generator( 0, 0, 0,-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1, 0, 0);
+            let ptrs[13] = Draw.image_row16_generator( 0, 0, 0, 0,-1,-1, 0, 0, 0, 0, 0,-1,-1, 0, 0, 0);
+            let ptrs[14] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[15] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+        //左
+        if (state = 2){
+            let ptrs[0] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[2] =  Draw.image_row16_generator( 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
+            let ptrs[3] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
+            let ptrs[4] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[5] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1, 0, 0);
+            let ptrs[9] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[10] = Draw.image_row16_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[11] = Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[12] = Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[13] = Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0, 0);
+            let ptrs[14] = Draw.image_row16_generator( 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0, 0);
+            let ptrs[15] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+        //上
+        if (state = 3){
+            let ptrs[0] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[1] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[2] = Draw.image_row16_generator( 0, 0, 0, 0,-1,-1, 0, 0, 0, 0, 0,-1,-1, 0, 0, 0);
+            let ptrs[3] = Draw.image_row16_generator( 0, 0, 0,-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1, 0, 0);
+            let ptrs[4] = Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1, 0, 0);
+            let ptrs[5] = Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1, 0);
+            let ptrs[6] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1, 0);
+            let ptrs[7] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[8] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[9] =  Draw.image_row16_generator( 0, 0,-1,-1,-1,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1, 0);
+            let ptrs[10] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[11] =  Draw.image_row16_generator( 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0);
+            let ptrs[12] =  Draw.image_row16_generator( 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1, 0, 0, 0);
+            let ptrs[13] =  Draw.image_row16_generator( 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0, 0, 0);
+            let ptrs[14] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            let ptrs[15] = Draw.image_row16_generator( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+        return ptrs;
+    }
+        
+    method int img_index(){
+        return image_state;
+    }
+    function void release_pacman_image(Array ptrs){
+        var int i;
+        var Array temp;
+        let i = 0;
+        while (i < 16){
+            let temp = ptrs[i];
+            do temp.dispose();
+            let i = i + 1;
+        }
+        do ptrs.dispose();
+        return;
+    }
+}

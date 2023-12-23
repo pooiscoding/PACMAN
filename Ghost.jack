@@ -65,7 +65,10 @@ class Ghost {
         }
         return false;
     }
-
+    method void set_transparent(){
+        let state = 0;
+        return;
+    }
     // interface-2 update_direction() -> set the direction of the ghost
     method void update_direction(Map map, Pacman pacman){
         
@@ -114,7 +117,17 @@ class Ghost {
         do Screen.drawRectangle(Game.translate_x_to_col(get_x()), Game.translate_y_to_row(get_y()+16), Game.translate_x_to_col(get_x()+16), Game.translate_y_to_row(get_y()));
         return;
     }
-    
+    method void set_frightened(){
+        let state = 1;
+        return;
+    }
+
+    method boolean is_frightened(){
+        if (state = 1){
+            return true;
+        }
+        return false;
+    }
     method int best_direction(Map map){
         var int ind;
         var Array validMoves;

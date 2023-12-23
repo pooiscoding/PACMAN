@@ -4,16 +4,17 @@ class Game {
     static int btmSide;
     static int xBoundary;
     static int yBoundary;
+    static int scorePerDot;
     static int time;
     static int randomA;
     static int randomB;
-    // ??
-    field int test;
+
+    field int score;
 
     // public
     // constructor
     constructor Game new(){
-        let test = 0; // ??
+        let score = 0;
         return this;
     }
     // deconstructor
@@ -48,7 +49,7 @@ class Game {
         let time = 0;
         do map.render_map();
         
-        while (true){
+        while (update_states(map, p1, ghosts)){
             let counter = 0;
             while (counter < 4){
                 let tempGhost = ghosts[counter];
@@ -63,13 +64,114 @@ class Game {
             do p1.draw();
             let time = time + 1;
             
-            do Sys.wait(100);
+            do Sys.wait(50);
         }
 
-        do g1.dispose();
+        
         do p1.dispose();
+        let counter = 0;
+        while (counter < 4){
+            let tempGhost = ghosts[counter];
+            do tempGhost.dispose();
+            let counter = counter + 1;
+        }
+        
         return;
-    }    
+    }
+    method boolean update_states(Map map, Pacman pacman, Array ghosts){
+        
+        var Ghost temp;
+        var int ind;
+        var int pacmanX;
+        var int pacmanY;
+        let pacmanX = pacman.get_x_chunk();
+        let pacmanY = pacman.get_y_chunk();
+
+        // calc score
+        if (map.get_chunk_info(pacmanX, pacmanY) = 1){
+            let score = score + scorePerDot;
+            do map.eat_chunk(pacmanX, pacmanY);
+        }
+        if (map.get_chunk_info(pacmanX+1, pacmanY) = 1){
+            let score = score + scorePerDot;
+            do map.eat_chunk(pacmanX+1, pacmanY);
+        }
+        if (map.get_chunk_info(pacmanX, pacmanY+1) = 1){
+            let score = score + scorePerDot;
+            do map.eat_chunk(pacmanX, pacmanY+1);
+        }
+        if (map.get_chunk_info(pacmanX+1, pacmanY+1) = 1){
+            let score = score + scorePerDot;
+            do map.eat_chunk(pacmanX+1, pacmanY+1);
+        }
+
+        // effects
+        if (map.get_chunk_info(pacmanX, pacmanY) = 2){
+            let ind = 0;
+            while (ind < 4){
+                let temp = ghosts[ind];
+                do temp.set_frightened();
+                let ind = ind + 1;
+            }
+            do map.eat_chunk(pacmanX, pacmanY);
+        }
+        if (map.get_chunk_info(pacmanX+1, pacmanY) = 2){
+            let ind = 0;
+            while (ind < 4){
+                let temp = ghosts[ind];
+                do temp.set_frightened();
+                let ind = ind + 1;
+            }
+            do map.eat_chunk(pacmanX+1, pacmanY);
+        }
+        if (map.get_chunk_info(pacmanX, pacmanY+1) = 2){
+            let ind = 0;
+            while (ind < 4){
+                let temp = ghosts[ind];
+                do temp.set_frightened();
+                let ind = ind + 1;
+            }
+            do map.eat_chunk(pacmanX, pacmanY+1);
+        }
+        if (map.get_chunk_info(pacmanX+1, pacmanY+1) = 2){
+            let ind = 0;
+            while (ind < 4){
+                let temp = ghosts[ind];
+                do temp.set_frightened();
+                let ind = ind + 1;
+            }
+            do map.eat_chunk(pacmanX+1, pacmanY+1);
+        }
+
+        // touch ghosts
+        let ind = 0;
+        while (ind < 4){
+            let temp = ghosts[ind];
+            if (is_collision(pacman, temp)){
+                if (temp.is_frightened()){
+                    do temp.set_transparent();
+                }
+                else{
+                    return false;
+                }
+            }
+            let ind = ind + 1;
+        }
+        return true;
+    }
+
+    method boolean is_collision(Pacman pacman, Ghost ghost){
+
+        var int deltaX;
+        var int deltaY;
+        let deltaX = (ghost.get_x_chunk() - pacman.get_x_chunk());
+        let deltaY = (ghost.get_y_chunk() - pacman.get_y_chunk());
+        if ((Math.abs(deltaX) < 2 ) & (Math.abs(deltaY) < 2)){
+            return true;
+        }
+        return false;
+    }
+
     function void init(){
         let leftSide = 112;
         let btmSide = 16;
@@ -77,6 +179,7 @@ class Game {
         let yBoundary = 223;
         let randomA = 1;
         let randomB = 0;
+        let scorePerDot = 10;
         return;
     }
     function int translate_x_to_col(int x){

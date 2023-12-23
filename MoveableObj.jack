@@ -87,7 +87,6 @@ class MoveableObj {
         return -1;
     }
 
-
     // protected
     // constructor
     constructor MoveableObj new(int startX, int startY, int startSpeed, int startDir){
