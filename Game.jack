@@ -55,9 +55,9 @@ class Game {
                 do tempGhost.draw();
                 let counter = counter + 1;
             }
-            do p1.update_direction(map);
+            // do p1.update_direction(map);
             do p1.erase();
-            do p1.move();
+            // do p1.move();
             do p1.draw();
             let time = time + 1;
             
@@ -145,6 +145,9 @@ class Game {
         let ind = 0;
         while (ind < 4){
             let temp = ghosts[ind];
+            if (((time / 10)*10) = time){
+                do temp.count();
+            }
             if (is_collision(pacman, temp)){
                 if (temp.is_frightened()){
                     do temp.set_transparent();
@@ -155,6 +158,7 @@ class Game {
             }
             let ind = ind + 1;
         }
+
         return true;
     }
 

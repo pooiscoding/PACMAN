@@ -10,6 +10,7 @@ class Ghost {
     field int targetXChunk;
     field int targetYChunk;
     field int image_state;
+    field int timeCounter;
 
     // public
     // initializer
@@ -34,26 +35,9 @@ class Ghost {
     // constructor
     constructor Ghost new(int Id, int startXChunk, int startYChunk, int direction){
         let prototype = MoveableObj.new(startXChunk*8, startYChunk*8, 4, direction);
-        let state = 2;
         let id = Id;
         let image_state = 0;
-        let phase = 0;
-        if (id = 1){
-            let targetXChunk = 2;
-            let targetYChunk = 26;
-        }
-        if (id = 2){
-            let targetXChunk = 32;
-            let targetYChunk = 26;
-        }
-        if (id = 3){
-            let targetXChunk = 2;
-            let targetYChunk = 1;
-        }
-        if (id = 4){
-            let targetXChunk = 32;
-            let targetYChunk = 1;
-        }
+        do set_back_to_init(true);
         return this;
     }
 
@@ -86,14 +70,19 @@ class Ghost {
         if ((~(Game.is_chunk_start(get_x()))) | (~(Game.is_chunk_start(get_y())))){
             return;
         }
-        // if (is_transparent() )
+        if (is_transparent() & (get_x_chunk() = targetXChunk) & (get_y_chunk() = targetYChunk)){
+            do set_back_to_init(false);
+            do update_target(pacman);
+        }
+        if (is_normal() & (~(timeCounter > 0))){
+            do change_phase();
+        }
         if (phase = 1){
             do update_target(pacman);
             let newDir = best_direction(map);
         }else{
             let newDir = best_direction(map);
         }
-
         do prototype.set_dir(newDir);
         return;
     }
@@ -138,6 +127,13 @@ class Ghost {
         }
         return false;
     }
+
+    method boolean is_normal(){
+        if (state = 2){
+            return true;
+        }
+        return false;
+    }
     method int best_direction(Map map){
         var int ind;
         var Array validMoves;
@@ -175,6 +171,22 @@ class Ghost {
         }
         do validMoves.dispose();
         return curBestDir;
+    }
+    method void change_phase(){
+
+        if ((phase = 0) | (id = 4)){
+            let phase = 1;
+            let timeCounter = 20;
+        }
+        else{
+            let phase = 0;
+            if (id = 3){
+                let timeCounter = 5;
+            }else{
+                let timeCounter = 7;
+            }
+        }
+        return;
     }
     method int distance_between_target(int chunkX, int chunkY){
         return (((chunkX - targetXChunk)*(chunkX - targetXChunk)) + ((chunkY - targetYChunk)*(chunkY - targetYChunk)));
@@ -251,7 +263,42 @@ class Ghost {
         }
         return;
     }
-
+    method void set_back_to_init(boolean fg){
+        let state = 2;
+        let phase = 0;
+        
+        if (id = 1){
+            let targetXChunk = 2;
+            let targetYChunk = 26;
+            let timeCounter = 7;
+        }
+        if (id = 2){
+            let targetXChunk = 32;
+            let targetYChunk = 26;
+            let timeCounter = 7;
+        }
+        if (id = 3){
+            let targetXChunk = 2;
+            let targetYChunk = 1;
+            let timeCounter = 5;
+        }
+        if (id = 4){
+            let targetXChunk = 32;
+            let targetYChunk = 1;
+            if (fg){
+                let timeCounter = 5;
+            }
+            else{
+                let phase = 1;
+                let timeCounter = 0;
+            }
+        }
+        return;
+    }
+    method void count(){
+        let timeCounter = timeCounter - 1;
+        return;
+    }
     // to simulate "inheritance" behavior, put all the public methods here
     method void move(){
         do prototype.move();
