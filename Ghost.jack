@@ -1,7 +1,8 @@
 class Ghost {
     
     static Array ghost_image;
-
+    static Array ghostTargetDx;
+    static Array ghostTargetDy;
     // private
     field MoveableObj prototype; // simulate "inheritance" behavior
     field int state; // 0-transparent 1-weak 2-normal
@@ -21,6 +22,16 @@ class Ghost {
         let ghost_image[2] = Ghost.generate_ghost_image(2);
         let ghost_image[3] = Ghost.generate_ghost_image(3);
         let ghost_image[4] = Ghost.generate_ghost_image(4);
+        let ghostTargetDx = Array.new(4);
+        let ghostTargetDx[0] = 2;
+        let ghostTargetDx[1] = 0;
+        let ghostTargetDx[2] = -2;
+        let ghostTargetDx[3] = -2;
+        let ghostTargetDy = Array.new(4);
+        let ghostTargetDy[0] = 0;
+        let ghostTargetDy[1] = -2;
+        let ghostTargetDy[2] = 0;
+        let ghostTargetDy[3] = 2;
         return;
     }
     function void release(){
@@ -30,6 +41,8 @@ class Ghost {
         do Ghost.release_ghost_image(ghost_image[3]);
         do Ghost.release_ghost_image(ghost_image[4]);
         do ghost_image.dispose();
+        do ghostTargetDx.dispose();
+        do ghostTargetDy.dispose();
         return;
     }
     // constructor
@@ -59,20 +72,24 @@ class Ghost {
         let state = 0;
         let phase = 0;
         do prototype.set_dir(MoveableObj.oposite_direction(prototype.get_direction()));
-        do update_target(0);
+        do update_target(0, 0);
         return;
     }
     // interface-2 update_direction() -> set the direction of the ghost
-    method void update_direction(Map map, Pacman pacman){
+    method void update_direction(Map map, Pacman pacman, Ghost ghost1){
         
         var int newDir;
         
         if ((~(Game.is_chunk_start(get_x()))) | (~(Game.is_chunk_start(get_y())))){
             return;
         }
+        if (is_transparent()){
+            do prototype.set_speed(8);
+        }
+
         if ((is_transparent() & (get_x_chunk() = targetXChunk) & (get_y_chunk() = targetYChunk)) | (is_frightened() & (~(timeCounter > 0)))){
             do set_back_to_init(false);
-            do update_target(pacman);
+            do update_target(pacman, ghost1);
         }
 
         if (is_normal() & (~(timeCounter > 0))){
@@ -80,7 +97,7 @@ class Ghost {
         }
         
         if (phase = 1){
-            do update_target(pacman);
+            do update_target(pacman, ghost1);
             let newDir = best_direction(map);
         }else{
             let newDir = best_direction(map);
@@ -120,7 +137,8 @@ class Ghost {
         let state = 1;
         let timeCounter = 3;
         do prototype.set_dir(MoveableObj.oposite_direction(prototype.get_direction()));
-        do update_target(0);
+        do prototype.set_speed(1);
+        do update_target(0, 0);
         return;
     }
 
@@ -163,10 +181,10 @@ class Ghost {
             return Game.random(validMoves, validMoveNum);
         }
         let curBestDir = validMoves[0];
-        let curDistance = distance_between_target(get_x_nxt_chunk(validMoves[0]), get_y_nxt_chunk(validMoves[0]));
+        let curDistance = distance_between(get_x_nxt_chunk(validMoves[0]), get_y_nxt_chunk(validMoves[0]), targetXChunk, targetYChunk);
         let ind = 1;
         while (ind < validMoveNum){
-            let tempDistance = distance_between_target(get_x_nxt_chunk(validMoves[ind]), get_y_nxt_chunk(validMoves[ind]));
+            let tempDistance = distance_between(get_x_nxt_chunk(validMoves[ind]), get_y_nxt_chunk(validMoves[ind]), targetXChunk, targetYChunk);
             if (tempDistance < curDistance){
                 let curBestDir = validMoves[ind];
             }
@@ -194,8 +212,8 @@ class Ghost {
     method int get_timer(){
         return timeCounter;
     }
-    method int distance_between_target(int chunkX, int chunkY){
-        return (((chunkX - targetXChunk)*(chunkX - targetXChunk)) + ((chunkY - targetYChunk)*(chunkY - targetYChunk)));
+    method int distance_between(int chunkX1, int chunkY1, int chunkX2, int chunkY2){
+        return (((chunkX1 - chunkX2)*(chunkX1 - chunkX2)) + ((chunkY1 - chunkY2)*(chunkY1 - chunkY2)));
     }
     method boolean valid_move_direction(int dir, Map map){
         if ((dir = 0) | (dir = 2)){
@@ -218,7 +236,10 @@ class Ghost {
         }
         return true;
     }
-    method void update_target(Pacman pacman){
+    method void update_target(Pacman pacman, Ghost ghost1){
+        var int curDir;
+        var int tempX;
+        var int tempY;
         if (is_frightened()){
             return;
         }
@@ -238,9 +259,11 @@ class Ghost {
             return;
         }
         if (id = 2){
+
             if (phase = 1){
-                let targetXChunk = pacman.get_x_chunk();
-                let targetYChunk = pacman.get_y_chunk();
+                let curDir = prototype.get_direction();
+                let targetXChunk = pacman.get_x_near_chunk(curDir)+ghostTargetDx[curDir];
+                let targetYChunk = pacman.get_y_near_chunk(curDir)+ghostTargetDy[curDir];
                 return;
             }
             let targetXChunk = 32;
@@ -249,8 +272,11 @@ class Ghost {
         }
         if (id = 3){
             if (phase = 1){
-                let targetXChunk = pacman.get_x_chunk();
-                let targetYChunk = pacman.get_y_chunk();
+                let curDir = prototype.get_direction();
+                let tempX = pacman.get_x_near_chunk(curDir)+ghostTargetDx[curDir];
+                let tempY = pacman.get_y_near_chunk(curDir)+ghostTargetDy[curDir];
+                let targetXChunk = tempX + tempX - ghost1.get_x_chunk();
+                let targetYChunk = tempY + tempY - ghost1.get_y_chunk();
                 return;
             }
             let targetXChunk = 2;
@@ -259,8 +285,13 @@ class Ghost {
         }
         if (id = 4){
             if (phase = 1){
-                let targetXChunk = pacman.get_x_chunk();
-                let targetYChunk = pacman.get_y_chunk();
+                if (distance_between(pacman.get_x_chunk(), pacman.get_y_chunk(), get_x_chunk(), get_y_chunk()) < 50){
+                    let targetXChunk = 32;
+                    let targetYChunk = 1;
+                }else{
+                    let targetXChunk = pacman.get_x_chunk();
+                    let targetYChunk = pacman.get_y_chunk();
+                }
                 return;
             }
             let targetXChunk = 32;
@@ -272,7 +303,7 @@ class Ghost {
     method void set_back_to_init(boolean fg){
         let state = 2;
         let phase = 0;
-        
+        do prototype.set_speed(2);
         if (id = 1){
             let targetXChunk = 2;
             let targetYChunk = 26;
