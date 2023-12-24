@@ -8,6 +8,7 @@ class Game {
     static int time;
     static int randomA;
     static int randomB;
+    static String empty;
 
     field int score;
 
@@ -147,7 +148,7 @@ class Game {
             do map.reduce_dotRemain();
         }
         do Output.moveCursor(0, 8);
-        do Output.printString("          ");
+        do Output.printString(empty);
         do Output.moveCursor(0, 8);
         do Output.printInt(score);
         do Output.println();
@@ -253,6 +254,12 @@ class Game {
         let randomA = 1;
         let randomB = 0;
         let scorePerDot = 10;
+        let empty = String.new("          ");
+        return;
+    }
+
+    function void release(){
+        do empty.dispose();
         return;
     }
     function int translate_x_to_col(int x){

@@ -18,6 +18,7 @@ class Main {
         do game.dispose();
         
         do MoveableObj.release();
+        do Game.release();
         do Ghost.release();
         do Pacman.release();
         do Map.release();
